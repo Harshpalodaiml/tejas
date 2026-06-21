@@ -11,6 +11,7 @@ Scalable doc map. Start at tier 1; go deeper only when you need to.
 
 | Doc | Lines | Purpose |
 |---|---|---|
+| [`FLOW.md`](./FLOW.md) | — | **Complete user flow — all flow-charts** |
 | [`../README.md`](../README.md) | ~75 | Project entry: problem, stack, demo links |
 | [`PRODUCT.md`](./PRODUCT.md) | ~130 | What we build: features, status, roadmap |
 | [`ARCHITECTURE.md`](./ARCHITECTURE.md) | ~210 | Physics model, 4 layers, fleet scale, APIs |
@@ -66,8 +67,8 @@ minmo/
 | What is Tejas? | `../README.md` |
 | How does physics + scale work? | `ARCHITECTURE.md` |
 | What features exist today? | `PRODUCT.md` § status matrix |
+| What's the full click-by-click flow? | **`FLOW.md`** |
 | How do I demo? | `demo.md` + `../tejas-twin/README.md` |
 | How do we sell? | `pitch/` + `story.md` |
-| How do we ingest a real DC? | `../tejas-twin/ingestion.md` |
 
 *Hook: "What did your building know last night that you didn't?"*
