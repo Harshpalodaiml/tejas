@@ -1,0 +1,6 @@
+# Local secrets — never commit
+.tejas-secret
+# Self-signed dev certs (regenerated on first run)
+.tejas-cert.pem
+.tejas-key.pem
+.DS_Store

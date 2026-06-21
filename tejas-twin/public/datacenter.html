@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tejas AI · 3D Digital Twin</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- The 3D digital twin fills the whole stage; everything else floats over it -->
+  <div id="twinCanvas"></div>
+  <div class="vignette"></div>
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="/admin" class="back-admin" title="Back to admin panel">‹</a>
+      <div class="logo">⚡</div>
+      <div class="brand-text">
+        <span class="brand-name">TEJAS&nbsp;AI</span>
+        <span class="brand-sub">Data Center · Digital Twin</span>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <button id="tourBtn" class="tour-btn" title="Let the AI walk you through the platform">▶ Explain the platform</button>
+      <div class="pill"><span class="dot live"></span><span id="siteName">Chennai · AI Data Center A</span></div>
+      <div class="pill mode" id="modePill" data-mode="ai"><span class="lbl">CONTROL</span><span id="modeValue">Tejas AI</span></div>
+      <div class="pill" id="brainPill" title="Chat brain"><span class="dot" id="brainDot"></span><span id="brainText">brain…</span></div>
+    </div>
+  </header>
+
+  <!-- ============ TOP KPI STRIP ============ -->
+  <div class="kpi-strip">
+    <div class="kpi"><span class="k-l">PUE · Tejas</span><span class="k-v good" id="kPueAI">1.30</span></div>
+    <div class="kpi"><span class="k-l">PUE · Baseline</span><span class="k-v warn" id="kPueBase">1.60</span></div>
+    <div class="kpi"><span class="k-l">Cooling now</span><span class="k-v" id="kCool">−35%</span></div>
+    <div class="kpi"><span class="k-l">Saving</span><span class="k-v good" id="kRupees">₹—/day</span></div>
+    <div class="kpi"><span class="k-l">Outside</span><span class="k-v" id="kAmb">38°C</span></div>
+    <div class="kpi"><span class="k-l">Safe band</span><span class="k-v good" id="kSafe">✓ ASHRAE</span></div>
+  </div>
+
+  <!-- ============ LEFT — CONTROLS ============ -->
+  <aside class="panel left">
+    <div class="card" id="envCard">
+      <div class="card-title">Environment <span class="hint">drive the twin</span></div>
+
+      <label class="slider-row">
+        <span class="s-lbl">Weather · outside <b id="ambVal">38°C</b></span>
+        <input type="range" id="ambSlider" min="28" max="50" value="38" step="1" />
+        <span class="s-scale"><i>28°</i><i>cool</i><i>heat&nbsp;wave</i><i>50°</i></span>
+      </label>
+
+      <label class="slider-row">
+        <span class="s-lbl">IT load · workload <b id="loadVal">80%</b></span>
+        <input type="range" id="loadSlider" min="30" max="110" value="80" step="5" />
+        <span class="s-scale"><i>30%</i><i>busy</i><i>peak</i><i>110%</i></span>
+      </label>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Who is in control?</div>
+      <div class="modes" id="modeSwitch">
+        <button data-mode="ai" class="active">Tejas&nbsp;AI</button>
+        <button data-mode="baseline">Baseline&nbsp;BMS</button>
+      </div>
+      <div class="ctl-readout" id="ctlReadout">Supply 25.0°C · Fans 60% · CHW 21.0°C</div>
+    </div>
+
+    <div class="card autonomy-card">
+      <div class="card-title">Autonomous Control <span class="auto-badge" id="autoBadge">● LIVE</span></div>
+      <div class="auto-stats">
+        <div><span class="al">Policy</span><span class="av" id="autoPolicy">v3</span></div>
+        <div><span class="al">Learned steps</span><span class="av" id="autoSteps">12,840</span></div>
+        <div><span class="al">Confidence</span><span class="av" id="autoConf">93%</span></div>
+      </div>
+      <div class="conf-bar"><div class="conf-fill" id="confFill"></div></div>
+      <div class="auto-why" id="autoWhy">Holding every rack in the safe band at least energy.</div>
+    </div>
+
+    <div class="card legend-card">
+      <div class="card-title">Rack inlet temperature</div>
+      <div class="ramp"></div>
+      <div class="ramp-scale"><span>15°</span><span>23°</span><span>27°</span><span>34°C</span></div>
+      <div class="legend-note">Click any rack in the 3D twin to inspect it.</div>
+    </div>
+
+    <div class="card roadmap">
+      <div class="card-title">Roadmap <span class="soon">vision</span></div>
+      <div class="roadmap-step"><b>Now</b> · AI data-center hall — autonomous cooling + predictive maintenance.</div>
+      <div class="roadmap-step"><b>Next</b> · Same brain into manufacturing hubs & normal factories — point the camera at any machine and the AI <i>builds its twin</i> with sensors you can control.</div>
+      <div class="roadmap-step"><b>V2 📱</b> · Field AR — Tejas detects the machine, overlays guide lines and says <i>“rotate this / replace that.”</i></div>
+      <button id="arBtn" class="ar-btn">📱 Open Field AR — scan QR</button>
+      <button id="vrBtn" class="ar-btn vr">🥽 Walk inside in VR — scan QR</button>
+    </div>
+  </aside>
+
+  <!-- ============ RIGHT — AI CHAT CONSOLE ============ -->
+  <aside class="panel right">
+    <div class="console card">
+      <div class="card-title">Tejas Assistant <span class="genui-tag">context-aware AI</span></div>
+      <div class="chat" id="chat"></div>
+      <div class="command-bar">
+        <input id="cmdInput" type="text" placeholder="Ask Tejas…  e.g. “what's happening?” · “is any machine going down?”" autocomplete="off" />
+        <button id="sendBtn" class="send">Send →</button>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </aside>
+
+  <!-- ============ INSPECTOR (rack click) ============ -->
+  <div class="inspector card" id="inspector" hidden>
+    <button class="x" id="inspClose">✕</button>
+    <div class="insp-name" id="inspName">GPU-16</div>
+    <div class="insp-grid">
+      <div><span class="il">Inlet temp</span><span class="iv" id="inspInlet">—</span></div>
+      <div><span class="il">IT load</span><span class="iv" id="inspLoad">—</span></div>
+      <div><span class="il">Airflow</span><span class="iv" id="inspAir">—</span></div>
+      <div><span class="il">Humidity</span><span class="iv" id="inspHum">—</span></div>
+      <div><span class="il">Vibration</span><span class="iv" id="inspVib">—</span></div>
+      <div><span class="il">Status</span><span class="iv" id="inspStatus">—</span></div>
+    </div>
+    <div class="insp-msg" id="inspMsg"></div>
+    <button class="insp-open" id="inspOpen">🔍 Inspect &amp; fix →</button>
+  </div>
+
+  <!-- ============ CONTEXT MENU (rack click) ============ -->
+  <div class="ctx-menu" id="ctxMenu" hidden>
+    <div class="ctx-head" id="ctxHead">GPU-16</div>
+    <div class="ctx-items" id="ctxItems"></div>
+  </div>
+
+  <!-- ============ COMPONENT DETAIL — the "proper design" full screen ====== -->
+  <div class="detail" id="detail" hidden>
+    <header class="detail-bar">
+      <button class="detail-back" id="detailBack">‹ Back to twin</button>
+      <div class="detail-id">
+        <span class="detail-name" id="detailName">GPU-16</span>
+        <span class="detail-model" id="detailModel"></span>
+      </div>
+      <span class="detail-status" id="detailStatus">Fault</span>
+      <div class="detail-spacer"></div>
+      <button class="detail-correct" id="detailCorrect">🛠 Move &amp; Correct</button>
+    </header>
+    <div class="detail-body">
+      <nav class="detail-tabs" id="detailTabs"></nav>
+      <main class="detail-main" id="detailMain"></main>
+      <aside class="detail-side" id="detailSide"></aside>
+    </div>
+    <!-- chat about THIS rack — voice (🧠 / press T) or type -->
+    <div class="detail-chat" id="detailChat">
+      <div class="dc-head">💬 Ask Tej about this rack
+        <button class="dc-voice" id="dcVoice" title="Press T or tap to talk">🧠</button></div>
+      <div class="dc-log" id="dcLog"></div>
+      <div class="dc-bar">
+        <input id="dcInput" type="text" placeholder="How do I fix it? · root cause? · PUE impact?" autocomplete="off" />
+        <button id="dcSend" title="Send">→</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BOTTOM — AI-DRIVEN PANEL DECK ============ -->
+  <div class="deck" id="deck">
+
+    <div class="d-card" data-panel="savings" hidden>
+      <div class="card-title">Verified Savings</div>
+      <div class="d-kpis">
+        <div class="big"><span class="v" id="sPct">—%</span><span class="l">leaner cooling</span></div>
+        <div class="big"><span class="v" id="sDay">₹—</span><span class="l">per day</span></div>
+        <div class="big"><span class="v" id="sYear">₹—</span><span class="l">per year</span></div>
+        <div class="big"><span class="v" id="sCo2">—t</span><span class="l">CO₂ / yr</span></div>
+      </div>
+    </div>
+
+    <div class="d-card" data-panel="power" hidden>
+      <div class="card-title">Live Power · Tejas vs Baseline <span class="legend2"><i class="sw ai"></i>Tejas <i class="sw base"></i>Baseline</span></div>
+      <canvas id="powerSpark" height="84"></canvas>
+      <div class="d-row"><span>Tejas <b class="good" id="pAI">— kW</b></span><span>Baseline <b id="pBase">— kW</b></span></div>
+      <div class="d-sub" id="pBreak">IT — kW · cooling — kW</div>
+    </div>
+
+    <div class="d-card" data-panel="efficiency" hidden>
+      <div class="card-title">Efficiency · PUE <span class="legend2"><i class="sw ai"></i>Tejas <i class="sw base"></i>Baseline</span></div>
+      <canvas id="pueSpark" height="84"></canvas>
+      <div class="d-row"><span>Tejas <b class="good" id="ePueAI">—</b></span><span>Baseline <b id="ePueBase">—</b></span></div>
+    </div>
+
+    <div class="d-card" data-panel="racks" hidden>
+      <div class="card-title">Rack Thermal Map</div>
+      <div class="rackmap" id="rackmap"></div>
+    </div>
+
+    <div class="d-card wide" data-panel="alerts" hidden>
+      <div class="card-title">AI Advisories <span class="hint">cooling + maintenance</span></div>
+      <div class="alerts" id="alerts"></div>
+    </div>
+
+    <div class="d-card wide" data-panel="autonomy" hidden>
+      <div class="card-title">Autonomous Decisions <span class="hint">what the AI did & why</span></div>
+      <div class="declog" id="declog"></div>
+    </div>
+
+    <div class="d-card wide" data-panel="service" hidden>
+      <div class="card-title">Service Work Order <span class="hint">predictive maintenance</span></div>
+      <div class="wo" id="wo"></div>
+    </div>
+
+    <div class="d-card" data-panel="fleet" hidden>
+      <div class="card-title">Fleet Projection · <span id="fleetCount">10</span> sites</div>
+      <div class="d-kpis">
+        <div class="big"><span class="v" id="fRupees">₹—</span><span class="l">saved / year</span></div>
+        <div class="big"><span class="v" id="fMwh">— MWh</span><span class="l">energy / year</span></div>
+        <div class="big"><span class="v" id="fCo2">— t</span><span class="l">CO₂ avoided</span></div>
+      </div>
+    </div>
+
+    <div class="d-card wide" data-panel="oneline" hidden>
+      <div class="card-title">Electrical Single-Line <span class="hint">grid → GPU racks · live</span></div>
+      <div id="oneline" class="oneline"></div>
+      <div id="onelineMeta" class="oneline-meta"></div>
+    </div>
+
+  </div>
+
+  <!-- ============ FIELD AR · QR MODAL ============ -->
+  <div class="modal" id="arModal">
+    <div class="modal-card">
+      <button class="x" id="arClose">✕</button>
+      <div class="modal-title">📱 Tejas Field AR — fix GPU-16</div>
+      <div class="modal-sub">Scan with your phone camera to open the field repair assistant. It navigates the technician to <b>GPU-16</b> and guides the fix in AR.</div>
+      <div class="qr" id="qrBox"></div>
+      <div class="qr-url" id="qrUrl">—</div>
+      <div class="modal-note">Phone must be on the same Wi-Fi. <a id="arOpenHere" href="/ar" target="_blank">Or open it here ↗</a> (camera needs HTTPS/localhost; otherwise a simulated view is shown).</div>
+    </div>
+  </div>
+
+  <!-- ============ VR WALKTHROUGH · QR MODAL ============ -->
+  <div class="modal" id="vrModal">
+    <div class="modal-card">
+      <button class="x" id="vrClose">✕</button>
+      <div class="modal-title">🥽 Walk inside the twin</div>
+      <div class="modal-sub">Scan with your phone to <b>stand inside</b> this data centre. Drag or tilt to look, joystick to walk between the racks, and tap <b>VR mode</b> for cardboard view.</div>
+      <div class="qr" id="vrQrBox"></div>
+      <div class="qr-url" id="vrQrUrl">—</div>
+      <div class="modal-note">Same Wi-Fi as this laptop. <a id="vrOpenHere" href="/vr" target="_blank">Or open it here ↗</a></div>
+    </div>
+  </div>
+
+  <!-- ============ GUIDED VOICE TOUR ============ -->
+  <div class="tour-veil" id="tourVeil" hidden></div>
+  <div class="tour-bar" id="tourBar" hidden>
+    <div class="presenter">
+      <div class="pres-avatar" id="presAvatar">🧠</div>
+    </div>
+    <div class="tour-mid">
+      <div class="tour-caption" id="tourCaption"></div>
+      <div class="tour-foot"><span id="tourStep">1 / 9</span></div>
+    </div>
+    <div class="tour-ctrls">
+      <button id="tourSkip">Skip ›</button>
+      <button id="tourExit">Exit</button>
+    </div>
+  </div>
+
+  <!-- ============ TEJ · VOICE (press T or tap the logo to talk) ============ -->
+  <button class="voice-btn" id="voiceBtn" title="Press T or tap to talk to Tej"><span>🧠</span></button>
+
+  <script src="vendor/qrcode.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

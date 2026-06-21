@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tejas · Connect a Data Center</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="wizpage">
+  <header class="topbar solid">
+    <div class="brand">
+      <a href="/admin" class="back-admin" title="Back to admin">‹</a>
+      <div class="logo">⚡</div>
+      <div class="brand-text"><span class="brand-name">CONNECT&nbsp;A&nbsp;DATA&nbsp;CENTER</span><span class="brand-sub">brownfield ingestion · shadow mode</span></div>
+    </div>
+    <div class="pill"><span class="dot" id="brainDot"></span><span id="brainText">brain…</span></div>
+  </header>
+
+  <div class="stepper" id="stepper">
+    <div class="step active" data-s="1"><b>1</b> Connect</div>
+    <div class="step" data-s="2"><b>2</b> Discover</div>
+    <div class="step" data-s="3"><b>3</b> Layout &amp; cooling</div>
+    <div class="step" data-s="4"><b>4</b> AI clarifies</div>
+    <div class="step" data-s="5"><b>5</b> Calibrate</div>
+    <div class="step" data-s="6"><b>6</b> Shadow live</div>
+  </div>
+
+  <main class="wiz">
+    <!-- STEP 1 — CONNECT -->
+    <section class="wiz-card" data-panel="1">
+      <div class="modal-title">Connect to the facility's systems</div>
+      <div class="modal-sub">Tejas reads the existing BMS / DCIM / historian — no rip-and-replace. Pick what the site exposes (we auto-discover the rest).</div>
+      <input class="name-input" id="siteName" type="text" placeholder="Site name (e.g. Mumbai · Hyperscale Hall 2)" />
+      <div class="conn-list" id="connList"></div>
+      <button class="btn" id="connectBtn">Connect &amp; discover →</button>
+      <div class="legend-note">Read-only. The write path stays dark until you commission control (Phase 3).</div>
+    </section>
+
+    <!-- STEP 2 — DISCOVER -->
+    <section class="wiz-card" data-panel="2" hidden>
+      <div class="modal-title">Discovering the estate…</div>
+      <div class="disc-log" id="discLog"></div>
+      <div class="asset-grid" id="assetGrid" hidden></div>
+      <button class="btn" id="toLayout" hidden>Continue → layout &amp; cooling</button>
+    </section>
+
+    <!-- STEP 3 — LAYOUT & COOLING TOPOLOGY -->
+    <section class="wiz-card wide-card" data-panel="3" hidden>
+      <div class="modal-title">Lay out the hall — racks, air &amp; water</div>
+      <div class="modal-sub">Discovery gives counts; the twin needs <b>topology</b>: how many racks, which cold aisle (CRAH) feeds each rack's air, and which rows sit on the liquid loop (CDU). <b>Click a row to toggle air ↔ liquid.</b></div>
+      <div class="layout-ctrls">
+        <label>Rows <input type="number" id="lRows" min="1" max="30" value="12"></label>
+        <label>Racks / row <input type="number" id="lPer" min="1" max="50" value="26"></label>
+        <label>CRAH (air) <input type="number" id="lCrah" min="0" max="40" value="8"></label>
+        <label>CDU (liquid) <input type="number" id="lCdu" min="0" max="40" value="4"></label>
+        <label>Avg kW/rack <input type="number" id="lKw" min="1" max="150" value="12"></label>
+      </div>
+      <div class="hall" id="hall"></div>
+      <div class="hall-legend">
+        <span><i class="sw cold"></i>cold aisle · air in</span>
+        <span><i class="sw hot"></i>hot aisle · return</span>
+        <span><i class="sw liq"></i>liquid row · CDU</span>
+      </div>
+      <div class="hall-sum" id="hallSum"></div>
+      <button class="btn" id="toClarify">Continue → AI review</button>
+    </section>
+
+    <!-- STEP 4 — AI CLARIFY -->
+    <section class="wiz-card" data-panel="4" hidden>
+      <div class="modal-title">Tejas AI is reviewing the draft twin <span class="conf" id="conf">confidence 0%</span></div>
+      <div class="modal-sub">It now sees your layout + cooling topology, and asks only what still changes energy or safety. Answer, or accept its default.</div>
+      <div class="conf-bar"><div class="conf-fill" id="confFill" style="width:0"></div></div>
+      <div class="qlist" id="qlist"></div>
+      <button class="btn" id="toCalibrate" disabled>Build understanding →</button>
+      <div class="ledger" id="ledger"></div>
+    </section>
+
+    <!-- STEP 5 — CALIBRATE -->
+    <section class="wiz-card" data-panel="5" hidden>
+      <div class="modal-title">Calibrating against telemetry</div>
+      <div class="modal-sub">Tuning the air + liquid loops per your topology until the twin matches measured reality, then back-testing on held-out history.</div>
+      <div class="cal-stages" id="calStages"></div>
+      <div class="prog"><i id="calBar"></i></div>
+      <div class="band" id="band" hidden></div>
+      <button class="btn" id="toActivate" hidden>Activate shadow twin →</button>
+    </section>
+
+    <!-- STEP 6 — ACTIVATE -->
+    <section class="wiz-card" data-panel="6" hidden>
+      <div class="done-big">🛰️</div>
+      <div class="modal-title" style="text-align:center">Shadow twin is live</div>
+      <div class="modal-sub" style="text-align:center" id="activeSummary">—</div>
+      <div class="band ok">Running read-only: the AI computes what it <b>would</b> do and logs the gap vs the real plant — zero risk. Graduate to advisory → control when the numbers prove out.</div>
+      <button class="btn" id="openTwin">Open the live twin →</button>
+    </section>
+  </main>
+
+  <script type="module" src="ingest.js"></script>
+</body>
+</html>

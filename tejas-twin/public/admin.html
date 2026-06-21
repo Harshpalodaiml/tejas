@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tejas AI · Digital Twin Platform</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="admin">
+  <div class="admin-bg"></div>
+
+  <header class="admin-top">
+    <div class="brand">
+      <div class="logo">⚡</div>
+      <div class="brand-text">
+        <span class="brand-name">TEJAS&nbsp;AI</span>
+        <span class="brand-sub">Digital Twin Platform · Admin</span>
+      </div>
+    </div>
+    <div class="pill"><span class="dot" id="brainDot"></span><span id="brainText">brain…</span></div>
+  </header>
+
+  <main class="admin-main">
+    <div class="admin-hero">
+      <h1>Your Digital Twins</h1>
+      <p>Open a live twin, or build a new one from a phone scan or a blueprint — the AI does the rest.</p>
+      <a class="hero-vr" href="/vr" target="_blank">🥽 Walk inside the data centre in VR →</a>
+    </div>
+
+    <div class="twin-types">
+      <button class="type-tab active" data-type="all">All</button>
+      <button class="type-tab" data-type="datacenter">Data Centers</button>
+      <button class="type-tab" data-type="factory">Factories</button>
+      <button class="type-tab" data-type="plant">Power Plants</button>
+    </div>
+
+    <div class="twin-cards" id="twinCards">
+      <!-- Data center (built-in) -->
+      <a class="twin-card dc" href="/datacenter" data-type="datacenter">
+        <div class="tc-badge">DATA CENTER</div>
+        <div class="tc-icon">🖥️</div>
+        <div class="tc-name">Chennai · AI Data Center A</div>
+        <div class="tc-meta"><span class="dot live"></span> Live · autonomous cooling</div>
+        <div class="tc-stats"><span>24 racks</span><span>PUE ~1.3</span><span>predictive maint.</span></div>
+        <div class="tc-open">Open twin →</div>
+      </a>
+
+      <!-- Showcase twins for sale (factory + power plants) -->
+      <a class="twin-card showcase" data-type="factory" href="/factory?type=factory&name=Smart%20Factory">
+        <div class="tc-badge fac">FACTORY</div>
+        <div class="tc-icon">🏭</div>
+        <div class="tc-name">Smart Factory</div>
+        <div class="tc-meta"><span class="dot live"></span> Live · machines, workers &amp; AGV</div>
+        <div class="tc-stats"><span>live sensors</span><span>controllable</span><span>VR walk</span></div>
+        <div class="tc-open">Open twin →</div>
+      </a>
+      <a class="twin-card showcase" data-type="plant" href="/factory?type=nuclear&name=Nuclear%20Plant">
+        <div class="tc-badge">NUCLEAR</div>
+        <div class="tc-icon">☢️</div>
+        <div class="tc-name">Nuclear Plant</div>
+        <div class="tc-meta"><span class="dot live"></span> Live · reactor in the safe band</div>
+        <div class="tc-stats"><span>reactor + turbine</span><span>cooling towers</span><span>VR walk</span></div>
+        <div class="tc-open">Open twin →</div>
+      </a>
+      <a class="twin-card showcase" data-type="plant" href="/factory?type=geothermal&name=Geothermal%20Plant">
+        <div class="tc-badge">GEOTHERMAL</div>
+        <div class="tc-icon">🌋</div>
+        <div class="tc-name">Geothermal Plant</div>
+        <div class="tc-meta"><span class="dot live"></span> Live · wellheads &amp; steam turbines</div>
+        <div class="tc-stats"><span>separators</span><span>steam plumes</span><span>VR walk</span></div>
+        <div class="tc-open">Open twin →</div>
+      </a>
+      <a class="twin-card showcase" data-type="plant" href="/factory?type=solar&name=Solar%20Farm">
+        <div class="tc-badge">SOLAR</div>
+        <div class="tc-icon">🔆</div>
+        <div class="tc-name">Solar Farm</div>
+        <div class="tc-meta"><span class="dot live"></span> Live · tracking PV arrays</div>
+        <div class="tc-stats"><span>trackers</span><span>inverters</span><span>VR walk</span></div>
+        <div class="tc-open">Open twin →</div>
+      </a>
+
+      <!-- Factory twins injected here -->
+
+      <!-- Create new -->
+      <button class="twin-card create" id="createCard">
+        <div class="plus">＋</div>
+        <div class="tc-name">Create new digital twin</div>
+        <div class="tc-meta">Factory · machine · production line</div>
+      </button>
+    </div>
+  </main>
+
+  <!-- ============ CREATE MODAL ============ -->
+  <div class="modal" id="createModal">
+    <div class="modal-card wide">
+      <button class="x" id="createClose">✕</button>
+      <div id="mStep1">
+        <div class="modal-title">Create a digital twin</div>
+        <div class="modal-sub">How do you want to capture the machine or facility?</div>
+        <div class="method-grid">
+          <button class="method" id="mScan">
+            <div class="m-icon">📷</div>
+            <div class="m-title">Scan with phone</div>
+            <div class="m-desc">Record a short video walking around the machine. The AI understands it from the video and reconstructs the twin.</div>
+            <div class="m-tag">recommended</div>
+          </button>
+          <button class="method" id="mBlueprint">
+            <div class="m-icon">🖼️</div>
+            <div class="m-title">Upload a blueprint</div>
+            <div class="m-desc">Drag &amp; drop a blueprint / P&amp;ID / layout image. The AI reads it and builds the twin with sensors.</div>
+          </button>
+          <button class="method" id="mStudio">
+            <div class="m-icon">✏️</div>
+            <div class="m-title">Twin Studio</div>
+            <div class="m-desc">Open a blank canvas. Search &amp; drag machines, coolers and sensors, or describe it in a prompt — then activate.</div>
+          </button>
+          <button class="method" id="mIngest">
+            <div class="m-icon">🏢</div>
+            <div class="m-title">Connect a data center</div>
+            <div class="m-desc">Brownfield: read the existing BMS / DCIM / historian, AI clarifies the gaps, calibrate, go live in shadow mode.</div>
+            <div class="m-tag">enterprise</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- scan-by-phone -->
+      <div id="mScanView" hidden>
+        <button class="lnk back" id="scanBack">‹ back</button>
+        <div class="modal-title">📷 Scan with your phone</div>
+        <div class="modal-sub">Scan this QR, then slowly video the machine from all sides. The AI reconstructs it and it appears here automatically.</div>
+        <div class="qr" id="scanQr"></div>
+        <div class="qr-url" id="scanUrl">—</div>
+        <div class="scan-wait"><span class="spinner"></span> Waiting for the scan to finish on your phone…</div>
+      </div>
+
+      <!-- blueprint upload -->
+      <div id="mBpView" hidden>
+        <button class="lnk back" id="bpBack">‹ back</button>
+        <div class="modal-title">🖼️ Upload a blueprint</div>
+        <div class="modal-sub">Drop a blueprint image — the AI extracts the machine, parts and sensor points.</div>
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="bpFile" accept="image/*" hidden />
+          <div class="dz-inner"><div class="dz-icon">⬆</div><div>Click or drop a blueprint image</div></div>
+          <img id="bpPreview" hidden />
+        </label>
+        <input class="name-input" id="bpName" type="text" placeholder="Name this twin (e.g. CNC Line · Bay 3)" />
+        <div class="bp-progress" id="bpProgress" hidden>
+          <div class="prog"><i id="bpBar"></i></div>
+          <div class="scanwords" id="bpWords"></div>
+        </div>
+        <button class="btn" id="bpBuild">Build the twin →</button>
+      </div>
+
+      <!-- created -->
+      <div id="mDone" hidden>
+        <div class="done-big">✅</div>
+        <div class="modal-title" style="text-align:center">Digital twin created</div>
+        <div class="modal-sub" style="text-align:center" id="doneName">—</div>
+        <button class="btn" id="doneOpen">Open the twin →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="vendor/qrcode.js"></script>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

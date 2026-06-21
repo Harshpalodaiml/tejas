@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tejas AI · Factory Twin</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="facCanvas"></div>
+  <div class="vignette"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a href="/admin" class="back-admin" title="Back to admin panel">‹</a>
+      <div class="logo">⚡</div>
+      <div class="brand-text">
+        <span class="brand-name" id="facName">Factory Twin</span>
+        <span class="brand-sub">Factory · Digital Twin</span>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <div class="pill mode" id="statePill" data-mode="ai"><span class="lbl">STATE</span><span id="stateValue">Running</span></div>
+      <div class="pill"><span class="dot" id="brainDot"></span><span id="brainText">brain…</span></div>
+    </div>
+  </header>
+
+  <!-- left: live sensors -->
+  <aside class="panel left">
+    <div class="card">
+      <div class="card-title">Live Sensors <span class="hint">virtual · from the twin</span></div>
+      <div class="sensor-grid" id="sensorGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Control</div>
+      <div class="modes" id="powerSwitch">
+        <button data-p="on" class="active">Run</button>
+        <button data-p="off">Stop</button>
+      </div>
+      <label class="slider-row">
+        <span class="s-lbl">Speed <b id="spdVal">60%</b></span>
+        <input type="range" id="spdSlider" min="0" max="100" value="60" step="5" />
+      </label>
+      <div class="ctl-readout" id="facReadout">Twin built by AI · controllable</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Health</div>
+      <div class="alerts" id="facAlerts"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Immersive</div>
+      <a id="facVr" class="ar-btn vr" href="/vr?type=factory" target="_blank">🥽 Walk inside in VR</a>
+      <a id="facAr" class="ar-btn" href="/ar" target="_blank">🛠️ Field AR repair</a>
+    </div>
+  </aside>
+
+  <!-- right: AI assistant -->
+  <aside class="panel right">
+    <div class="console card">
+      <div class="card-title">Tejas Assistant <span class="genui-tag">factory twin</span></div>
+      <div class="chat" id="chat"></div>
+      <div class="command-bar">
+        <input id="cmdInput" type="text" placeholder="Ask about this machine…  e.g. “is it healthy?”" autocomplete="off" />
+        <button id="sendBtn" class="send">Send →</button>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </aside>
+
+  <script type="module" src="factory.js"></script>
+</body>
+</html>

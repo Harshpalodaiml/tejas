@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tejas · Twin Studio</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="studio">
+  <header class="topbar solid">
+    <div class="brand">
+      <a href="/admin" class="back-admin" title="Back to admin">‹</a>
+      <div class="logo">⚡</div>
+      <div class="brand-text"><span class="brand-name">TWIN&nbsp;STUDIO</span><span class="brand-sub">design · place · activate</span></div>
+    </div>
+    <div class="topbar-meta">
+      <input id="twinName" class="name-input slim" type="text" placeholder="Name this twin (e.g. Chennai Cold Store)" />
+      <button id="activateBtn" class="tour-btn">⚡ Activate twin</button>
+    </div>
+  </header>
+
+  <div class="studio-grid">
+    <!-- LEFT: component palette -->
+    <aside class="palette">
+      <input id="paletteSearch" class="search" type="text" placeholder="🔍 Search a machine, cooler, sensor…" />
+      <div id="paletteList"></div>
+    </aside>
+
+    <!-- CENTER: open canvas -->
+    <main class="canvas-wrap">
+      <div id="canvas" class="canvas">
+        <div class="wind" id="wind"><div class="wind-arrow" id="windArrow">→</div><span id="windLabel">wind —</span></div>
+        <div class="canvas-hint" id="canvasHint">The land/plot is laid for you. Drag machines, coolers &amp; sensors onto it — or describe your facility in the prompt and let the AI build it.</div>
+      </div>
+    </main>
+
+    <!-- RIGHT: prompt / location / properties -->
+    <aside class="inspect">
+      <div class="card">
+        <div class="card-title">Build by prompt <span class="genui-tag">AI</span></div>
+        <textarea id="prompt" class="prompt" placeholder="e.g. Cold storage with 2 compressors, 3 evaporator coolers and temperature sensors"></textarea>
+        <button id="genBtn" class="btn">✨ Generate layout</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Location &amp; climate</div>
+        <button id="locBtn" class="btn ghost">📍 Detect my location</button>
+        <div class="loc-out" id="locOut">Location not set — climate &amp; wind flow drive cooling placement.</div>
+      </div>
+
+      <div class="card" id="propCard" hidden>
+        <div class="card-title">Properties <button class="lnk" id="delNode">delete</button></div>
+        <div class="prop-name" id="propName">—</div>
+        <label class="slider-row"><span class="s-lbl" id="propParamLbl">Setpoint</span>
+          <input type="range" id="propParam" min="0" max="100" value="50"></label>
+        <div class="ctl-readout" id="propVal">—</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Components <span id="compCount">0</span></div>
+        <div class="legend-note">Drag to move · click to select · then <b>Activate</b> to make it a live, controllable twin.</div>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="builder.js"></script>
+</body>
+</html>

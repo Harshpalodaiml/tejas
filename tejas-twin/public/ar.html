@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Tejas Field AR</title>
+<style>
+:root{--ai:#2ee6a6;--bad:#ff5468;--warn:#ffd34d;--accent:#4da3ff;--ink:#eaf1fb;--dim:#9fb0c8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#04060c;color:var(--ink);overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;user-select:none}
+#stage{position:fixed;inset:0;overflow:hidden}
+video,#simRoom{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#overlay{position:absolute;inset:0;z-index:5}
+
+/* simulated data-center room (camera fallback) */
+#simRoom{display:none;background:
+  radial-gradient(120% 80% at 50% 0%,#16243f,#070b14 70%);perspective:600px;overflow:hidden}
+#simRoom .floor{position:absolute;left:-20%;right:-20%;bottom:-10%;height:60%;
+  background:repeating-linear-gradient(90deg,#0c1422 0 38px,#0e1830 38px 40px),
+             repeating-linear-gradient(0deg,#0c1422 0 38px,#0e1830 38px 40px);
+  transform:rotateX(72deg);transform-origin:bottom;opacity:.5}
+#simRoom .row{position:absolute;bottom:32%;display:flex;gap:10px;left:50%;transform:translateX(-50%)}
+#simRoom .rk{width:46px;height:120px;border-radius:5px;background:linear-gradient(#1a2740,#0e1626);
+  box-shadow:inset 0 0 12px rgba(0,0,0,.6);position:relative}
+#simRoom .rk::after{content:"";position:absolute;inset:6px 8px;border-radius:3px;
+  background:linear-gradient(#19c6ff44,#2ee6a644);animation:flick 2.5s infinite}
+#simRoom .rk.hot::after{background:linear-gradient(#ff7a3388,#ff334488);animation:flick 1s infinite}
+@keyframes flick{50%{opacity:.5}}
+.simtag{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.12em;
+  color:var(--dim);background:rgba(0,0,0,.4);padding:3px 9px;border-radius:999px}
+
+/* HUD frame */
+.hud-corners::before,.hud-corners::after,.hud-corners i::before,.hud-corners i::after{
+  content:"";position:absolute;width:26px;height:26px;border:2px solid rgba(46,230,166,.7)}
+.hud-corners::before{top:70px;left:16px;border-right:0;border-bottom:0}
+.hud-corners::after{top:70px;right:16px;border-left:0;border-bottom:0}
+.hud-corners i::before{bottom:120px;left:16px;border-right:0;border-top:0}
+.hud-corners i::after{bottom:120px;right:16px;border-left:0;border-top:0}
+
+/* top bar */
+.topbar{position:absolute;top:0;left:0;right:0;z-index:8;display:flex;align-items:center;gap:9px;
+  padding:12px 14px;background:linear-gradient(180deg,rgba(4,6,12,.85),transparent)}
+.logo{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:0;
+  background:url('jet.svg') center/60% no-repeat, linear-gradient(135deg,#1b6,#093);box-shadow:0 0 14px rgba(46,230,166,.5)}
+.tb-txt b{font-size:13px;letter-spacing:.1em}
+.tb-txt span{display:block;font-size:9.5px;color:var(--dim);letter-spacing:.05em}
+.tb-target{margin-left:auto;font-size:10px;color:var(--ai);border:1px solid rgba(46,230,166,.4);
+  padding:4px 9px;border-radius:999px}
+
+/* scanline */
+.scan{position:absolute;left:0;right:0;height:2px;z-index:6;
+  background:linear-gradient(90deg,transparent,var(--ai),transparent);animation:scan 2.6s linear infinite;opacity:.8}
+@keyframes scan{0%{top:12%}100%{top:86%}}
+
+/* center reticle (search mode) */
+.reticle{position:absolute;top:50%;left:50%;width:120px;height:120px;transform:translate(-50%,-50%);
+  z-index:6;border:2px dashed rgba(46,230,166,.6);border-radius:50%;animation:spin 6s linear infinite}
+.reticle::after{content:"";position:absolute;inset:36px;border:2px solid rgba(46,230,166,.5);border-radius:50%}
+@keyframes spin{100%{transform:translate(-50%,-50%) rotate(360deg)}}
+
+/* AR LOCK rings placed at tap point */
+.lock{position:absolute;z-index:7;transform:translate(-50%,-50%);pointer-events:none}
+.lock .ring{position:absolute;top:50%;left:50%;border-radius:50%;transform:translate(-50%,-50%)}
+.lock .r1{width:30px;height:30px;border:3px solid var(--ai);box-shadow:0 0 24px var(--ai);animation:pop .5s ease-out forwards}
+.lock .r2{width:30px;height:30px;border:2px solid rgba(46,230,166,.8);animation:expand 1.6s ease-out infinite}
+.lock .r3{width:88px;height:88px;border:2px dashed rgba(46,230,166,.7);animation:spin 5s linear infinite}
+.lock .cross{position:absolute;top:50%;left:50%;width:2px;height:18px;background:var(--ai);transform:translate(-50%,-50%);box-shadow:0 0 8px var(--ai)}
+.lock .cross.h{width:18px;height:2px}
+.lock .tag{position:absolute;left:60px;top:-14px;white-space:nowrap;font-size:11px;font-weight:800;
+  color:#04120b;background:var(--ai);padding:4px 9px;border-radius:8px;box-shadow:0 0 18px rgba(46,230,166,.6)}
+.lock .tag::before{content:"";position:absolute;left:-26px;top:14px;width:26px;height:2px;background:var(--ai)}
+.lock.bad .r1,.lock.bad .r2{border-color:var(--bad);box-shadow:0 0 24px var(--bad)}
+.lock.bad .r3{border-color:rgba(255,84,104,.8)} .lock.bad .cross{background:var(--bad)}
+.lock.bad .tag{background:var(--bad);color:#fff} .lock.bad .tag::before{background:var(--bad)}
+@keyframes pop{0%{width:6px;height:6px;opacity:0}60%{opacity:1}100%{width:34px;height:34px}}
+@keyframes expand{0%{width:30px;height:30px;opacity:.9}100%{width:150px;height:150px;opacity:0}}
+
+/* navigation arrow */
+.nav{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);z-index:7;text-align:center;display:none}
+.nav .arrow{font-size:96px;color:var(--ai);text-shadow:0 0 30px rgba(46,230,166,.7);animation:bob 1.2s infinite}
+.nav .dist{font-size:34px;font-weight:800;margin-top:-10px}
+.nav .where{font-size:13px;color:var(--dim);margin-top:4px;letter-spacing:.06em}
+@keyframes bob{50%{transform:translateY(-10px)}}
+
+/* bottom card */
+.card{position:absolute;left:12px;right:12px;bottom:14px;z-index:9;border-radius:16px;padding:15px 16px;
+  background:rgba(8,13,24,.93);border:1px solid rgba(46,230,166,.3);backdrop-filter:blur(10px);
+  box-shadow:0 16px 50px rgba(0,0,0,.6)}
+.card h3{margin:0 0 4px;font-size:16px}
+.card .sub{font-size:12px;color:var(--dim);line-height:1.45}
+.card.bad{border-color:rgba(255,84,104,.5)}
+.pill{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px;margin-bottom:8px;letter-spacing:.04em}
+.pill.bad{background:rgba(255,84,104,.18);color:var(--bad)}
+.pill.ok{background:rgba(46,230,166,.18);color:var(--ai)}
+.steps{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.steps li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.4}
+.steps .n{flex:none;width:20px;height:20px;border-radius:50%;background:rgba(46,230,166,.16);color:var(--ai);
+  display:grid;place-items:center;font-size:11px;font-weight:800}
+.steps li.done{opacity:.5}.steps li.done .n{background:var(--ai);color:#04120b}
+.steps li.done .t{text-decoration:line-through}
+.parts{margin-top:10px;font-size:11px;color:var(--dim)}
+.parts b{color:var(--ink)}
+/* AI how-to ("open it from the top") */
+.howto{margin:10px 0 4px;padding:10px 12px;border-radius:11px;background:rgba(46,230,166,.08);
+  border:1px solid rgba(46,230,166,.28)}
+.howto-h{font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--ai);margin-bottom:6px}
+.howto ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.howto li{font-size:12.5px;line-height:1.4;color:var(--ink)}
+.howto li::marker{color:var(--ai);font-weight:800}
+.btn{display:block;width:100%;margin-top:12px;padding:13px;border:none;border-radius:12px;font-size:14px;
+  font-weight:800;cursor:pointer;background:linear-gradient(135deg,#19c6ff,#2ee6a6);color:#04120b}
+.btn.ghost{background:rgba(255,255,255,.06);color:var(--ink);border:1px solid rgba(255,255,255,.12)}
+.hintline{position:absolute;bottom:120px;left:0;right:0;z-index:7;text-align:center;font-size:13px;
+  color:#eaf4ff;text-shadow:0 1px 6px #000;pointer-events:none}
+.success{position:absolute;inset:0;z-index:12;display:none;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(4,8,14,.86);text-align:center;padding:30px}
+.success .big{font-size:64px;animation:pop2 .5s}
+@keyframes pop2{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* blueprint twin builder */
+.blueprint{position:absolute;z-index:6;transform:translate(-50%,-50%);pointer-events:none;display:none}
+.blueprint svg{overflow:visible;filter:drop-shadow(0 0 7px rgba(77,163,255,.65))}
+.bp-line{fill:none;stroke:#4da3ff;stroke-width:1.7;stroke-dasharray:760;stroke-dashoffset:760;animation:draw 1.3s forwards}
+.bp-fill{fill:rgba(77,163,255,.07);stroke:#4da3ff;stroke-width:1.5;stroke-dasharray:760;stroke-dashoffset:760;animation:draw 1.3s forwards}
+.bp-dim{stroke:#2ee6a6;stroke-width:1;stroke-dasharray:4 3;opacity:.8}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sensor{position:absolute;z-index:7;transform:translate(-50%,-50%);pointer-events:none;text-align:center;animation:pop2 .4s}
+.sensor .dot{width:11px;height:11px;border-radius:50%;background:var(--ai);box-shadow:0 0 12px var(--ai);margin:0 auto;animation:flick 1.6s infinite}
+.sensor .chip{margin-top:4px;font-size:10px;font-weight:700;background:rgba(8,13,24,.92);border:1px solid rgba(46,230,166,.45);
+  padding:3px 7px;border-radius:7px;white-space:nowrap}
+.sensor .chip .v{color:var(--ai)}
+.sensor.warn .dot{background:var(--warn);box-shadow:0 0 12px var(--warn)}
+.sensor.warn .chip{border-color:var(--warn)}.sensor.warn .v{color:var(--warn)}
+.prog{height:7px;border-radius:7px;background:rgba(255,255,255,.1);overflow:hidden;margin:11px 0}
+.prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4da3ff,#2ee6a6);transition:width .12s}
+.scanwords{font-family:ui-monospace,monospace;font-size:11px;color:var(--accent);min-height:15px}
+.ctrlrow{display:flex;align-items:center;gap:10px;margin-top:11px;font-size:12px;color:var(--dim)}
+.ctrlrow input[type=range]{flex:1;accent-color:#2ee6a6}
+.toggle{padding:7px 13px;border-radius:9px;border:1px solid rgba(46,230,166,.5);background:rgba(46,230,166,.15);
+  color:var(--ai);font-weight:800;font-size:12px;cursor:pointer}
+.toggle.off{border-color:rgba(255,84,104,.5);background:rgba(255,84,104,.15);color:var(--bad)}
+.mode-btns{display:flex;flex-direction:column;gap:9px;margin-top:10px}
+.mode-btns .btn{margin-top:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <video id="video" playsinline muted></video>
+  <div id="simRoom">
+    <div class="floor"></div>
+    <div class="row" id="simRacks"></div>
+    <div class="simtag">SIMULATED VIEW · enable HTTPS for live camera</div>
+  </div>
+
+  <div id="overlay" class="hud-corners"><i></i>
+    <div class="scan" id="scan"></div>
+    <div class="reticle" id="reticle"></div>
+    <div class="nav" id="nav">
+      <div class="arrow">⬆</div>
+      <div class="dist" id="navDist">18 m</div>
+      <div class="where">Hall A · Row 2 → GPU-16</div>
+    </div>
+    <div class="blueprint" id="blueprint"></div>
+    <div id="sensorLayer"></div>
+    <div class="hintline" id="hint"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="logo">⚡</div>
+    <div class="tb-txt"><b>TEJAS&nbsp;FIELD</b><span>AR repair assistant</span></div>
+    <div class="tb-target" id="tbTarget">● locating…</div>
+  </div>
+
+  <div class="card" id="card">
+    <span class="pill bad">⚠ SERVICE TICKET</span>
+    <h3 id="cTitle">Tejas Field Assistant</h3>
+    <div class="sub" id="cSub">I’ll take you to the machine that needs service and show you exactly what to fix. Tap start.</div>
+    <div id="cBody"></div>
+    <button class="btn" id="cBtn">Start →</button>
+  </div>
+
+  <div class="success" id="success">
+    <div class="big">✅</div>
+    <h2 style="margin:14px 0 6px">Fixed &amp; verified</h2>
+    <div class="sub" style="max-width:300px">GPU-16 inlet back to normal. Tejas re-checked the twin and closed the work order automatically. Hall can run warmer again — savings restored.</div>
+    <button class="btn" style="max-width:260px;margin-top:20px" onclick="location.reload()">Done</button>
+  </div>
+</div>
+
+<script src="ar.js"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tejas · Data Center Digital Twin</title>
+<link rel="stylesheet" href="twinpro.css" />
+</head>
+<body>
+  <div id="stage"></div>
+  <div class="vig"></div>
+
+  <!-- top bar -->
+  <header class="topbar">
+    <div class="tb-left">
+      <a class="back" href="/admin" title="Back">‹</a>
+      <span class="wordmark">TEJAS</span>
+      <span class="tb-sub">Data Center Digital Twin · <b id="siteLabel">Virginia Site</b></span>
+    </div>
+    <div class="tb-right">
+      <button class="tb-btn" id="brainBtn"><span class="dot" id="brainDot"></span><span id="brainText">brain</span></button>
+      <button class="tb-btn accent" id="shadowBtn">● Shadow mode</button>
+    </div>
+  </header>
+
+  <!-- left icon rail -->
+  <nav class="rail glass" style="border-radius:14px">
+    <div class="ico on" data-go="analytics" title="Overview / Analytics">📊</div>
+    <div class="ico" data-go="configurator" title="Configurator">⚙️</div>
+    <div class="ico" data-go="simulations" title="Simulations">🌡️</div>
+    <div class="sep"></div>
+    <div class="ico" data-act="rack" title="Inspect racks">🗄️</div>
+    <div class="ico" data-act="cam" title="Reset camera">🎥</div>
+    <div class="ico" data-act="chat" title="Assistant">💬</div>
+    <div class="sep"></div>
+    <div class="ico" title="Settings">⋯</div>
+    <div class="brand">T</div>
+  </nav>
+
+  <!-- chat assistant -->
+  <aside class="assistant glass" id="assistant">
+    <div class="ah"><span>TEJAS ASSISTANT</span><span id="asState">●</span></div>
+    <div class="chat" id="chat"></div>
+    <div class="askbar"><input id="ask" type="text" placeholder="Ask anything…" autocomplete="off" /><button id="askBtn">→</button></div>
+    <div class="chips" id="chips"></div>
+  </aside>
+
+  <!-- right vertical tabs + panels -->
+  <div class="vtabs">
+    <div class="panelwrap on" data-pane="analytics">
+      <div class="panel glass">
+        <div class="p-head"><div class="p-title"><span class="pi">📊</span> Analytics</div>
+          <div class="seg" id="anSeg"><button class="on" data-v="spec">Specifications</button><button data-v="kpi">KPIs</button></div>
+        </div>
+        <div id="specView">
+          <div class="spec-h">GB-class · NVL72 <span class="chip">GPU</span></div>
+          <div id="specList"></div>
+          <div class="section">Site Information</div>
+          <div id="siteList"></div>
+        </div>
+        <div id="kpiView" hidden>
+          <div class="kpis" id="kpiGrid"></div>
+          <div class="section">Energy use by asset</div>
+          <div id="assetBars"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panelwrap" data-pane="configurator">
+      <div class="panel glass">
+        <div class="p-head"><div class="p-title"><span class="pi">⚙️</span> Configurator</div>
+          <div class="seg" id="cfgSeg"><button class="on" data-v="site">Site</button><button data-v="gpu">GPU</button><button data-v="power">Power</button></div>
+        </div>
+        <div class="fld two"><label>Location</label>
+          <select class="sel" id="cfgRegion"><option>United States</option><option>India</option><option>Europe</option></select>
+          <select class="sel" id="cfgState"><option>Virginia</option><option>Texas</option><option>Oregon</option></select>
+        </div>
+        <div class="fld"><label>Power generation</label>
+          <select class="sel"><option>Hybrid</option><option>Grid</option><option>On-site + Grid</option></select>
+        </div>
+        <div class="fld"><label>Cooling regime</label>
+          <select class="sel"><option>Mixed · air + direct-to-chip liquid</option><option>Air-cooled</option><option>Full liquid</option></select>
+        </div>
+        <div class="section">Control</div>
+        <div class="seg" id="modeSeg" style="width:100%"><button class="on" data-m="ai" style="flex:1">Tejas AI</button><button data-m="base" style="flex:1">Baseline BMS</button></div>
+        <div class="srl"><div class="lab"><span>IT load</span><b id="loadV">80%</b></div><input type="range" id="loadR" min="30" max="110" value="80"></div>
+        <div class="srow" style="margin-top:8px"><span class="sl">Control policy</span><span class="sv" id="ctlReadout">supply 25°C · fans 60%</span></div>
+      </div>
+    </div>
+
+    <div class="panelwrap" data-pane="simulations">
+      <div class="panel glass">
+        <div class="p-head"><div class="p-title"><span class="pi">🌡️</span> Simulations</div></div>
+        <div class="subtabs" id="simTabs">
+          <div class="subtab on" data-s="thermal">🌡️ Thermal</div>
+          <div class="subtab" data-s="electrical">⚡ Electrical</div>
+          <div class="subtab" data-s="piping">🚰 Piping</div>
+        </div>
+
+        <div id="simThermal">
+          <div class="fld"><label>Zone</label><select class="sel"><option>Data Hall</option><option>Cold aisle</option><option>Hot aisle</option></select></div>
+          <div class="fld"><label>Operation</label><select class="sel"><option>Normal</option><option>Loss of single lineup</option><option>Heat wave</option></select></div>
+          <div class="fld"><label>Variable</label><select class="sel"><option>Temperature</option><option>Airflow</option></select></div>
+          <div class="legend-bar"></div>
+          <div class="legend-sc"><span>78 °F</span><span id="legPlay">live</span><span>110 °F</span></div>
+          <div class="srl"><div class="lab"><span>Outside ambient</span><b id="ambV">38°C</b></div><input type="range" id="ambR" min="28" max="50" value="38"></div>
+          <div class="play"><button id="playBtn">▶</button><span class="pt" id="playT">Play a 24-hour day cycle</span></div>
+        </div>
+
+        <div id="simElectrical" hidden>
+          <div class="srow"><span class="sl">345 kV utility · N+1</span><span class="sv" style="color:var(--green)">● healthy</span></div>
+          <div class="diagram" id="elecDiagram"></div>
+        </div>
+
+        <div id="simPiping" hidden>
+          <div class="legend-list">
+            <div class="lz">Cooling</div>
+            <div class="li"><span class="ln" style="border-color:#ff6b6b"></span> High-temp chilled water supply</div>
+            <div class="li"><span class="ln" style="border-color:#ff9d4d"></span> High-temp chilled water return</div>
+            <div class="li"><span class="ln" style="border-color:#5aa8ff"></span> Medium-temp chilled water supply</div>
+            <div class="li"><span class="ln" style="border-color:#2b6bff"></span> Medium-temp chilled water return</div>
+            <div class="li"><span class="ln" style="border-color:#54e0a6"></span> Condenser water</div>
+            <div class="li"><span class="ln" style="border-color:#cfd8e6"></span> HVAC supply / return air</div>
+            <div class="lz">IT</div>
+            <div class="li"><span class="ln" style="border-color:#ffd34d"></span> Fiber connection</div>
+            <div class="li"><span class="ln" style="border-color:#9aa7bd"></span> Ethernet connection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vtab-col">
+      <div class="vtab on" data-pane="analytics">Analytics</div>
+      <div class="vtab" data-pane="configurator">Configurator</div>
+      <div class="vtab" data-pane="simulations">Simulations</div>
+    </div>
+  </div>
+
+  <div class="banner"><span class="dot"></span><span id="bannerText">Shadow mode · drag to orbit · click a rack to inspect</span></div>
+
+  <script type="module" src="twinpro.js"></script>
+</body>
+</html>
