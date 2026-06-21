@@ -1,29 +1,29 @@
 # Tejas AI — Pitch Package
 
-## PDFs (share / print / email)
+**Live demo:** `cd tejas-twin && ./run.sh`  
+**Online:** [Video](https://accuconsult-my.sharepoint.com/:v:/g/personal/harsh_zenalyst_ai/IQCCDlXCZ5lwR5V-T7A_N7cMAT15xtCeoMB5dCppqR4f2d8?e=lg9S4D) · [Canva deck](https://canva.link/348k4b76wzcfxen)
+
+## Use which file
+
+| Need | File |
+|---|---|
+| 60-second pitch | [`60-second-elevated-pitch.md`](./60-second-elevated-pitch.md) |
+| Leave-behind | [`one-pager.md`](./one-pager.md) |
+| Full playbook | [`pitch.md`](./pitch.md) |
+| AI factory / GPU hall angle | [`ai-factory-elevated-pitch.md`](./ai-factory-elevated-pitch.md) |
+
+## PDFs (print / email)
 
 | PDF | Purpose |
 |---|---|
-| **[Tejas-AI-Factory-Deck.pdf](./Tejas-AI-Factory-Deck.pdf)** | **★ AI Factory slide deck** — testing env · VR repair |
-| **[ai-factory-elevated-pitch.pdf](./ai-factory-elevated-pitch.pdf)** | **★ AI Factory full script** — 14 slides + 60s + demo flow |
-| **[Tejas-AI-Pitch-Deck.pdf](./Tejas-AI-Pitch-Deck.pdf)** | Original 15-slide investor deck |
-| **[60-second-elevated-pitch.pdf](./60-second-elevated-pitch.pdf)** | General 60s pitch script |
-| **[one-pager.pdf](./one-pager.pdf)** | Leave-behind one-pager |
-| **[pitch.pdf](./pitch.pdf)** | Full playbook |
+| `Tejas-AI-Factory-Deck.pdf` | AI factory deck |
+| `Tejas-AI-Pitch-Deck.pdf` | Investor deck |
+| `60-second-elevated-pitch.pdf` | 60s script |
+| `one-pager.pdf` | One-pager |
+| `pitch.pdf` | Playbook |
 
-## Source files (edit these, then re-export PDFs)
+**Regenerate PDFs:** `bash scripts/export-pitch-pdfs.sh`
 
-| File | Purpose |
-|---|---|
-| [ai-factory-elevated-pitch.md](./ai-factory-elevated-pitch.md) | AI Factory pitch source |
-| [Tejas-AI-Factory-Deck.pptx](./Tejas-AI-Factory-Deck.pptx) | AI Factory deck source |
-| [60-second-elevated-pitch.md](./60-second-elevated-pitch.md) | 60s pitch source |
-| [pitch.md](./pitch.md) | Master playbook source |
-| [one-pager.md](./one-pager.md) | One-pager source |
-| [Tejas-AI-Pitch-Deck.pptx](./Tejas-AI-Pitch-Deck.pptx) | Original deck source |
+## Docs
 
-**Regenerate all PDFs:** `bash scripts/export-pitch-pdfs.sh` (needs LibreOffice + pandoc)
-
-**Live demo:** `cd tejas-twin && ./run.sh` → https://localhost:7878
-
-**More docs:** [../story.md](../story.md) · [../PRODUCT.md](../PRODUCT.md) · [../README.md](../README.md)
+[`../story.md`](../story.md) · [`../PRODUCT.md`](../PRODUCT.md) · [`../demo.md`](../demo.md)
